@@ -15,6 +15,7 @@
   section { margin-bottom:40px; }
   h2 { color:var(--accent); border-bottom:2px solid var(--accent); padding-bottom:6px; }
   .btn { display:inline-block; padding:14px 28px; background:var(--accent); color:#fff; text-decoration:none; border:none; border-radius:999px; font-weight:bold; font-size:1rem; cursor:pointer; }
+  .btn:disabled { opacity:.5; cursor:not-allowed; }
   .btn.secondary { background:#25d366; }
   .center { text-align:center; }
   footer { text-align:center; color:var(--muted); padding:24px; font-size:.9rem; }
@@ -23,10 +24,10 @@
   .opciones { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:8px; }
   .opcion { padding:8px 12px; border:1px solid var(--accent); background:#fff; color:var(--accent); border-radius:8px; cursor:pointer; font-size:.95rem; }
   .opcion.activa { background:var(--accent); color:#fff; }
+  .opcion:disabled { opacity:.4; text-decoration:line-through; cursor:not-allowed; }
   .vacio { color:var(--muted); font-size:.9rem; }
   #reserva input { display:block; margin:8px auto; padding:8px; width:260px; max-width:90%; font-size:1rem; }
   #confirmar { margin-top:12px; }
-  #confirmar:disabled { opacity:.5; cursor:not-allowed; }
 </style>
 </head>
 <body>
@@ -48,7 +49,7 @@
       <p class="paso">3. Tus datos</p>
       <input id="nombre" placeholder="Nombre" oninput="actualizar()">
       <input id="personas" type="number" min="1" max="20" value="2" oninput="actualizar()">
-      <button id="confirmar" class="btn" disabled onclick="confirmar()">Confirmar por WhatsApp</button>
+      <button id="confirmar" class="btn" disabled onclick="confirmar()">Confirmar reserva</button>
     </div>
     <p style="margin-top:20px"><a class="btn secondary" href="https://wa.me/54XXXXXXXXXX">Consultar por WhatsApp</a></p>
   </section>
@@ -69,10 +70,13 @@
 <footer>© 2026 frada.</footer>
 
 <script>
-  const WHATSAPP = "54XXXXXXXXXX"; // tu número con código de país, sin + ni 0 ni 15
+  const API_URL = "https://script.google.com/macros/s/AKfycbzhr5B5aJgRvwzkVF8lzb2MebjZXSSjjcSZmBilx52KwY6anmMUmhvsjIZ2h9zUde2Z/exec";
   const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
-  const DIAS = ["dom","lun","mar","mié","jue","vie","sáb"];
-  let dia = null, hora = null;
+  const DIAS = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+  let dia = null, hora = null, enviando = false;
+
+  function pad(n) { return String(n).padStart(2, "0"); }
+  function isoFecha(f) { return `${f.getFullYear()}-${pad(f.getMonth() + 1)}-${pad(f.getDate())}`; }
 
   // Lun a jue: 19:00 a 23:30. Vie y sáb: 19:00 a 00:30. Dom: cerrado.
   // La última reserva es 30 min antes del cierre.
@@ -83,9 +87,7 @@
     const lista = [];
     for (let m = 19 * 60; m <= cierre - 30; m += 30) {
       const t = m % (24 * 60);
-      const h = String(Math.floor(t / 60)).padStart(2, "0");
-      const min = String(t % 60).padStart(2, "0");
-      lista.push(`${h}:${min}`);
+      lista.push(`${pad(Math.floor(t / 60))}:${pad(t % 60)}`);
     }
     return lista;
   }
@@ -97,25 +99,43 @@
 
   function actualizar() {
     const nombre = document.getElementById("nombre").value.trim();
-    const personas = document.getElementById("personas").value;
-    document.getElementById("confirmar").disabled = !(dia && hora && nombre && personas >= 1);
+    const personas = Number(document.getElementById("personas").value);
+    document.getElementById("confirmar").disabled = !(dia && hora && nombre && personas >= 1 && !enviando);
   }
 
-  function elegirDia(fecha, boton) {
+  async function elegirDia(fecha, boton) {
     dia = fecha;
     hora = null;
     marcar(document.getElementById("dias"), boton);
 
     const cont = document.getElementById("horas");
-    cont.innerHTML = "";
     const lista = horarios(fecha);
+    cont.innerHTML = "";
     if (lista.length === 0) {
       cont.innerHTML = '<span class="vacio">Ese día estamos cerrados</span>';
+      actualizar();
+      return;
     }
+    cont.innerHTML = '<span class="vacio">Cargando horarios...</span>';
+
+    let ocupados = {}, max = 4;
+    try {
+      const r = await fetch(`${API_URL}?fecha=${isoFecha(fecha)}`);
+      const datos = await r.json();
+      ocupados = datos.conteo || {};
+      max = datos.max || max;
+    } catch (e) {
+      // si falla la consulta, se muestran todos los horarios
+    }
+    if (dia !== fecha) return; // el usuario cambió de día mientras cargaba
+
+    cont.innerHTML = "";
     lista.forEach(h => {
       const b = document.createElement("button");
       b.className = "opcion";
-      b.textContent = h;
+      const lleno = (ocupados[h] || 0) >= max;
+      b.textContent = lleno ? `${h} (completo)` : h;
+      b.disabled = lleno;
       b.onclick = () => { hora = h; marcar(cont, b); actualizar(); };
       cont.appendChild(b);
     });
@@ -132,18 +152,46 @@
       if (f.getDay() === 0) continue; // domingo cerrado
       const b = document.createElement("button");
       b.className = "opcion";
-      b.textContent = `${DIAS[f.getDay()]} ${f.getDate()} ${MESES[f.getMonth()].slice(0, 3)}`;
+      b.textContent = `${DIAS[f.getDay()].slice(0, 3)} ${f.getDate()} ${MESES[f.getMonth()].slice(0, 3)}`;
       b.onclick = () => elegirDia(f, b);
       cont.appendChild(b);
     }
   }
 
-  function confirmar() {
+  async function confirmar() {
     const nombre = document.getElementById("nombre").value.trim();
-    const personas = document.getElementById("personas").value;
-    const fecha = `${dia.getDate()} de ${MESES[dia.getMonth()]}`;
-    const msg = `Hola! Quiero reservar en frada. para el ${fecha} a las ${hora} hs, ${personas} personas. Nombre: ${nombre}`;
-    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+    const personas = Number(document.getElementById("personas").value);
+    const btn = document.getElementById("confirmar");
+    enviando = true;
+    btn.textContent = "Enviando...";
+    actualizar();
+
+    let ok = false, error = "";
+    try {
+      const r = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ fecha: isoFecha(dia), hora, nombre, personas })
+      });
+      const res = await r.json();
+      ok = res.ok;
+      error = res.error || "";
+    } catch (e) {
+      error = "No se pudo enviar la reserva. Probá de nuevo.";
+    }
+
+    if (ok) {
+      document.getElementById("reserva").innerHTML = `
+        <p class="paso">¡Reserva confirmada!</p>
+        <p>${DIAS[dia.getDay()]} ${dia.getDate()} de ${MESES[dia.getMonth()]} a las ${hora} hs, para ${personas} personas, a nombre de ${nombre}.</p>
+        <p>Te esperamos en frada.</p>`;
+      return;
+    }
+
+    enviando = false;
+    btn.textContent = "Confirmar reserva";
+    alert(error);
+    actualizar();
   }
 
   renderDias();
