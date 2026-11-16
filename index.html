@@ -1,200 +1,254 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>frada.</title>
-<style>
-  :root { --bg:#fdf8f0; --text:#2b2b2b; --accent:#b5452b; --muted:#6b6b6b; }
-  * { box-sizing: border-box; }
-  body { margin:0; font-family: system-ui, -apple-system, Arial, sans-serif; background:var(--bg); color:var(--text); line-height:1.5; }
-  header { text-align:center; padding:48px 16px 32px; background:var(--accent); color:#fff; }
-  header h1 { margin:0 0 8px; font-size:2.2rem; }
-  header p { margin:0; opacity:.9; }
-  main { max-width:720px; margin:0 auto; padding:24px 16px 48px; }
-  section { margin-bottom:40px; }
-  h2 { color:var(--accent); border-bottom:2px solid var(--accent); padding-bottom:6px; }
-  .btn { display:inline-block; padding:14px 28px; background:var(--accent); color:#fff; text-decoration:none; border:none; border-radius:999px; font-weight:bold; font-size:1rem; cursor:pointer; }
-  .btn:disabled { opacity:.5; cursor:not-allowed; }
-  .btn.secondary { background:#25d366; }
-  .center { text-align:center; }
-  footer { text-align:center; color:var(--muted); padding:24px; font-size:.9rem; }
-
-  .paso { margin: 20px 0 8px; font-weight: bold; }
-  .opciones { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:8px; }
-  .opcion { padding:8px 12px; border:1px solid var(--accent); background:#fff; color:var(--accent); border-radius:8px; cursor:pointer; font-size:.95rem; }
-  .opcion.activa { background:var(--accent); color:#fff; }
-  .opcion:disabled { opacity:.4; text-decoration:line-through; cursor:not-allowed; }
-  .vacio { color:var(--muted); font-size:.9rem; }
-  #reserva input { display:block; margin:8px auto; padding:8px; width:260px; max-width:90%; font-size:1rem; }
-  #confirmar { margin-top:12px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>frada. · Reservas, carta y cómo llegar</title>
+  <meta name="description" content="Reservá tu mesa en frada., un paréntesis en tu día. Av. San Martín 1960, Caballito. Todos los días de 7:30 a 00 hs.">
+  <meta property="og:title" content="frada. · Reservas, carta y cómo llegar">
+  <meta property="og:description" content="Un paréntesis en tu día. Reservá tu mesa, mirá la carta y llegá fácil.">
+  <meta property="og:image" content="assets/fachada.png">
+  <link rel="icon" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header>
-  <h1>frada.</h1>
-  <p>Av. San Martín 1960 | Caballito</p>
-</header>
 
-<main>
-  <section class="center" id="reservar">
-    <h2>Reservar mesa</h2>
-    <div id="reserva">
-      <p class="paso">1. Elegí el día</p>
-      <div id="dias" class="opciones"></div>
+  <!-- ENCABEZADO -->
+  <header class="encabezado">
+    <a href="#inicio" class="marca" aria-label="frada. inicio">
+      <img src="assets/logo.jpg" alt="" class="marca-logo">
+      <span>frada.</span>
+    </a>
+    <nav class="menu" aria-label="Principal">
+      <a href="#carta">Carta</a>
+      <a href="#horarios">Horarios</a>
+      <a href="#reservar">Reservas</a>
+      <a href="#ubicacion">Cómo llegar</a>
+      <a href="#resenas">Reseñas</a>
+    </nav>
+    <a href="#reservar" class="btn btn-primario btn-pequeno">Reservar</a>
+  </header>
 
-      <p class="paso">2. Elegí la hora</p>
-      <div id="horas" class="opciones"><span class="vacio">Primero elegí un día</span></div>
+  <main id="inicio">
 
-      <p class="paso">3. Tus datos</p>
-      <input id="nombre" placeholder="Nombre" oninput="actualizar()">
-      <input id="personas" type="number" min="1" max="20" value="2" oninput="actualizar()">
-      <button id="confirmar" class="btn" disabled onclick="confirmar()">Confirmar reserva</button>
-    </div>
-    <p style="margin-top:20px"><a class="btn secondary" href="https://wa.me/54XXXXXXXXXX">Consultar por WhatsApp</a></p>
-  </section>
+    <!-- HERO -->
+    <section class="hero">
+      <img src="assets/fachada.png" alt="Fachada de frada. en la esquina de Av. San Martín, Caballito" class="hero-fondo">
+      <div class="hero-capa"></div>
+      <div class="hero-contenido">
+        <h1 class="hero-titulo">frada.</h1>
+        <p class="hero-lema">Un paréntesis en tu día.</p>
+        <div class="hero-botones">
+          <a href="#reservar" class="btn btn-primario">Reservar mesa</a>
+          <a href="assets/carta-frada.pdf" class="btn btn-secundario" target="_blank" rel="noopener">Ver carta</a>
+          <a href="#ubicacion" class="btn btn-secundario">Cómo llegar</a>
+        </div>
+      </div>
+    </section>
 
-  <section>
-    <h2>Horarios</h2>
-    <p>Lunes a jueves: 19:00 a 23:30</p>
-    <p>Viernes y sábado: 19:00 a 00:30</p>
-    <p>Domingo: cerrado</p>
-  </section>
+    <!-- HORARIOS Y DATOS -->
+    <section class="franja" id="horarios" aria-label="Horarios y dirección">
+      <div class="franja-item">
+        <span class="franja-etiqueta">Horario</span>
+        <strong>Todos los días</strong>
+        <span>7:30 a 00:00 hs</span>
+      </div>
+      <div class="franja-item">
+        <span class="franja-etiqueta">Dónde estamos</span>
+        <strong>Av. San Martín 1960</strong>
+        <span>Caballito, CABA</span>
+      </div>
+      <div class="franja-item">
+        <span class="franja-etiqueta">Reservas</span>
+        <strong>Viernes y sábados</strong>
+        <span>de 20:00 a 21:15 hs</span>
+      </div>
+    </section>
 
-  <section>
-    <h2>Ubicación</h2>
-    <p>Av. San Martín 1960, Caballito, Buenos Aires</p>
-  </section>
-</main>
+    <!-- RESERVAS -->
+    <section class="seccion reservar" id="reservar">
+      <div class="reservar-formulario">
+        <p class="etiqueta">Reservas</p>
+        <h2>Hacé tu reserva</h2>
+        <p class="texto-suave">Viernes o sábados por la noche. Completá el formulario y te confirmamos tu mesa.</p>
 
-<footer>© 2026 frada.</footer>
+        <form id="form-reserva" novalidate>
+          <label class="campo">
+            <span>Nombre</span>
+            <input type="text" name="nombre" autocomplete="name" required>
+          </label>
 
-<script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzhr5B5aJgRvwzkVF8lzb2MebjZXSSjjcSZmBilx52KwY6anmMUmhvsjIZ2h9zUde2Z/exec";
-  const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
-  const DIAS = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
-  let dia = null, hora = null, enviando = false;
+          <div class="fila-campos">
+            <label class="campo">
+              <span>Día</span>
+              <select name="fecha" id="select-fecha" required></select>
+            </label>
+            <label class="campo">
+              <span>Horario</span>
+              <select name="hora" required>
+                <option value="20:00">20:00 hs</option>
+                <option value="20:15">20:15 hs</option>
+                <option value="20:30">20:30 hs</option>
+                <option value="20:45">20:45 hs</option>
+                <option value="21:00">21:00 hs</option>
+                <option value="21:15">21:15 hs</option>
+              </select>
+            </label>
+          </div>
 
-  function pad(n) { return String(n).padStart(2, "0"); }
-  function isoFecha(f) { return `${f.getFullYear()}-${pad(f.getMonth() + 1)}-${pad(f.getDate())}`; }
+          <div class="fila-campos">
+            <label class="campo">
+              <span>Personas</span>
+              <select name="personas">
+                <option value="1">1 persona</option>
+                <option value="2" selected>2 personas</option>
+                <option value="3">3 personas</option>
+                <option value="4">4 personas</option>
+                <option value="5">5 personas</option>
+                <option value="6">6 personas</option>
+                <option value="7">7 personas</option>
+                <option value="8">8 personas</option>
+              </select>
+            </label>
+            <label class="campo">
+              <span>Teléfono</span>
+              <input type="tel" name="telefono" autocomplete="tel" required>
+            </label>
+          </div>
 
-  // Lun a jue: 19:00 a 23:30. Vie y sáb: 19:00 a 00:30. Dom: cerrado.
-  // La última reserva es 30 min antes del cierre.
-  function horarios(fecha) {
-    const d = fecha.getDay();
-    if (d === 0) return [];
-    const cierre = (d === 5 || d === 6) ? 24 * 60 + 30 : 23 * 60 + 30;
-    const lista = [];
-    for (let m = 19 * 60; m <= cierre - 30; m += 30) {
-      const t = m % (24 * 60);
-      lista.push(`${pad(Math.floor(t / 60))}:${pad(t % 60)}`);
-    }
-    return lista;
-  }
+          <label class="campo">
+            <span>Comentarios (opcional)</span>
+            <textarea name="comentarios" rows="2" placeholder="Cumpleaños, alergias, mesa con vista..."></textarea>
+          </label>
 
-  function marcar(contenedor, boton) {
-    contenedor.querySelectorAll(".opcion").forEach(x => x.classList.remove("activa"));
-    boton.classList.add("activa");
-  }
+          <button type="submit" class="btn btn-primario btn-bloque" id="boton-reserva">Confirmar reserva</button>
+          <p class="mensaje" id="mensaje-reserva" role="status" aria-live="polite"></p>
+        </form>
 
-  function actualizar() {
-    const nombre = document.getElementById("nombre").value.trim();
-    const personas = Number(document.getElementById("personas").value);
-    document.getElementById("confirmar").disabled = !(dia && hora && nombre && personas >= 1 && !enviando);
-  }
+        <p class="nota">¿No encontrás tu día u horario? <a href="https://www.instagram.com/frada.ba" target="_blank" rel="noopener">Escribinos por Instagram</a>.</p>
+      </div>
+      <figure class="reservar-foto">
+        <img src="assets/reservas.jpg" alt="Plato de carne con puré y vino, en frada.">
+      </figure>
+    </section>
 
-  async function elegirDia(fecha, boton) {
-    dia = fecha;
-    hora = null;
-    marcar(document.getElementById("dias"), boton);
+    <!-- CARTA -->
+    <section class="seccion carta" id="carta">
+      <div class="encabezado-seccion">
+        <p class="etiqueta">Carta</p>
+        <h2>Para todos los momentos del día</h2>
+        <p class="texto-suave">Desayunos, meriendas, pastelería, almuerzos, cenas, bebidas y vinos.</p>
+      </div>
 
-    const cont = document.getElementById("horas");
-    const lista = horarios(fecha);
-    cont.innerHTML = "";
-    if (lista.length === 0) {
-      cont.innerHTML = '<span class="vacio">Ese día estamos cerrados</span>';
-      actualizar();
-      return;
-    }
-    cont.innerHTML = '<span class="vacio">Cargando horarios...</span>';
+      <div class="galeria">
+        <img src="assets/cafe-torta.png" alt="Café con leche y tarta de frutas">
+        <img src="assets/torta-pistacho.png" alt="Porción de torta de pistacho con café">
+        <img src="assets/medialuna.png" alt="Medialuna rellena con caramelo">
+        <img src="assets/cookies.png" alt="Cookies de chocolate recién horneadas">
+      </div>
 
-    let ocupados = {}, max = 4;
-    try {
-      const r = await fetch(`${API_URL}?fecha=${isoFecha(fecha)}`);
-      const datos = await r.json();
-      ocupados = datos.conteo || {};
-      max = datos.max || max;
-    } catch (e) {
-      // si falla la consulta, se muestran todos los horarios
-    }
-    if (dia !== fecha) return; // el usuario cambió de día mientras cargaba
+      <ul class="categorias">
+        <li>Desayunos y meriendas</li>
+        <li>Cafés y tés</li>
+        <li>Pastelería</li>
+        <li>Sándwiches y combos</li>
+        <li>Entradas</li>
+        <li>Pastas y risottos</li>
+        <li>Ensaladas</li>
+        <li>Carnes y pescados</li>
+        <li>Postres</li>
+        <li>Tragos y vinos</li>
+      </ul>
 
-    cont.innerHTML = "";
-    lista.forEach(h => {
-      const b = document.createElement("button");
-      b.className = "opcion";
-      const lleno = (ocupados[h] || 0) >= max;
-      b.textContent = lleno ? `${h} (completo)` : h;
-      b.disabled = lleno;
-      b.onclick = () => { hora = h; marcar(cont, b); actualizar(); };
-      cont.appendChild(b);
-    });
-    actualizar();
-  }
+      <div class="centrado">
+        <a href="assets/carta-frada.pdf" class="btn btn-oscuro" target="_blank" rel="noopener">Ver carta completa (PDF)</a>
+      </div>
+    </section>
 
-  function renderDias() {
-    const cont = document.getElementById("dias");
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    for (let i = 0; i < 21; i++) {
-      const f = new Date(hoy);
-      f.setDate(hoy.getDate() + i);
-      if (f.getDay() === 0) continue; // domingo cerrado
-      const b = document.createElement("button");
-      b.className = "opcion";
-      b.textContent = `${DIAS[f.getDay()].slice(0, 3)} ${f.getDate()} ${MESES[f.getMonth()].slice(0, 3)}`;
-      b.onclick = () => elegirDia(f, b);
-      cont.appendChild(b);
-    }
-  }
+    <!-- RESEÑAS -->
+    <section class="seccion resenas" id="resenas">
+      <div class="encabezado-seccion">
+        <p class="etiqueta">Reseñas</p>
+        <h2>Un clásico de la zona</h2>
+        <p class="calificacion">
+          <span class="estrellas" aria-hidden="true">★★★★★</span>
+          <strong>4,6</strong> sobre 5 · más de 560 reseñas en Google
+        </p>
+      </div>
 
-  async function confirmar() {
-    const nombre = document.getElementById("nombre").value.trim();
-    const personas = Number(document.getElementById("personas").value);
-    const btn = document.getElementById("confirmar");
-    enviando = true;
-    btn.textContent = "Enviando...";
-    actualizar();
+      <div class="tarjetas-resenas">
+        <!-- Resúmenes en español de reseñas publicadas en Google. Podés reemplazarlos por citas textuales si lo preferís. -->
+        <article class="tarjeta-resena">
+          <div class="estrellas" aria-hidden="true">★★★★★</div>
+          <p>Platos deliciosos, postres increíbles, ambiente cálido y un servicio rápido e impecable.</p>
+          <span class="autor">Reseña de Google</span>
+        </article>
+        <article class="tarjeta-resena">
+          <div class="estrellas" aria-hidden="true">★★★★★</div>
+          <p>Atención excelente: los mozos te saludan aunque no te estén atendiendo. El sándwich de chipa tostado, riquísimo.</p>
+          <span class="autor">Reseña de Google</span>
+        </article>
+        <article class="tarjeta-resena">
+          <div class="estrellas" aria-hidden="true">★★★★★</div>
+          <p>Un lugar hermoso, armado en una antigua casona. Ideal para merendar, almorzar o cenar sin apuro.</p>
+          <span class="autor">Reseña de Google</span>
+        </article>
+      </div>
 
-    let ok = false, error = "";
-    try {
-      const r = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ fecha: isoFecha(dia), hora, nombre, personas })
-      });
-      const res = await r.json();
-      ok = res.ok;
-      error = res.error || "";
-    } catch (e) {
-      error = "No se pudo enviar la reserva. Probá de nuevo.";
-    }
+      <div class="centrado">
+        <a href="https://maps.app.goo.gl/DLDHQESYEP1AhfUH8" class="btn btn-oscuro" target="_blank" rel="noopener">Ver todas las reseñas en Google</a>
+      </div>
+    </section>
 
-    if (ok) {
-      document.getElementById("reserva").innerHTML = `
-        <p class="paso">¡Reserva confirmada!</p>
-        <p>${DIAS[dia.getDay()]} ${dia.getDate()} de ${MESES[dia.getMonth()]} a las ${hora} hs, para ${personas} personas, a nombre de ${nombre}.</p>
-        <p>Te esperamos en frada.</p>`;
-      return;
-    }
+    <!-- UBICACIÓN -->
+    <section class="seccion ubicacion" id="ubicacion">
+      <div class="ubicacion-info">
+        <p class="etiqueta">Cómo llegar</p>
+        <h2>Av. San Martín 1960</h2>
+        <p class="texto-suave">Caballito, Ciudad Autónoma de Buenos Aires</p>
+        <ul class="lista-simple">
+          <li><strong>Horario:</strong> todos los días de 7:30 a 00:00 hs</li>
+          <li><strong>Reservas:</strong> viernes y sábados, de 20:00 a 21:15 hs</li>
+        </ul>
+        <div class="botones-fila">
+          <a href="https://maps.app.goo.gl/DLDHQESYEP1AhfUH8" class="btn btn-primario" target="_blank" rel="noopener">Cómo llegar</a>
+          <a href="https://www.instagram.com/frada.ba" class="btn btn-secundario-oscuro" target="_blank" rel="noopener">Instagram</a>
+        </div>
+      </div>
+      <div class="mapa">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d52543.31885223697!2d-58.53231545136719!3d-34.605237999999986!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccb005c7b0a93%3A0x81269a192cdf6c1c!2sFrada!5e0!3m2!1ses!2sar!4v1794792812423!5m2!1ses!2sar" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" title="Mapa de frada."></iframe>
+      </div>
+    </section>
 
-    enviando = false;
-    btn.textContent = "Confirmar reserva";
-    alert(error);
-    actualizar();
-  }
+    <!-- INSTAGRAM -->
+    <section class="banda-instagram">
+      <div>
+        <h2>¿Tenés alguna duda?</h2>
+        <p>Escribinos por mensaje directo en Instagram y te respondemos.</p>
+      </div>
+      <a href="https://www.instagram.com/frada.ba" class="btn btn-oscuro" target="_blank" rel="noopener">Enviar mensaje en Instagram</a>
+    </section>
 
-  renderDias();
-</script>
+  </main>
+
+  <!-- PIE -->
+  <footer class="pie">
+    <p class="marca-pie">frada.</p>
+    <p>Un paréntesis en tu día.</p>
+    <p>Av. San Martín 1960, Caballito · <a href="https://www.instagram.com/frada.ba" target="_blank" rel="noopener">@frada.ba</a></p>
+    <p class="derechos">© frada. · Todos los derechos reservados</p>
+  </footer>
+
+  <!-- BARRA FIJA EN MÓVIL -->
+  <nav class="barra-movil" aria-label="Acciones rápidas">
+    <a href="#reservar">Reservar</a>
+    <a href="assets/carta-frada.pdf" target="_blank" rel="noopener">Carta</a>
+    <a href="https://maps.app.goo.gl/DLDHQESYEP1AhfUH8" target="_blank" rel="noopener">Cómo llegar</a>
+  </nav>
+
+  <script src="script.js"></script>
 </body>
 </html>
