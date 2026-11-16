@@ -5,7 +5,7 @@
    ========================================================== */
 
 const CONFIG = {
-  endpointReservas: "",
+  endpointReservas: "https://script.google.com/macros/s/AKfycbxhE6VHeHp9EGkDfifmTgxAOElDiBGYdLyXINxbgyBQ_tfD0PYrpntqT2GWGwkhskgq/exec",
 };
 
 const formulario = document.getElementById("form-reserva");
