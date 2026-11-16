@@ -29,11 +29,18 @@
   <p>Av. San Martín 1960 | Caballito</p>
 </header>
 <main>
-<section class="center">
-  <a class="btn" href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1SvWibDfGZ-MayPaIGykP7SpOiSSGTs2z_zFrYuHZmV_tyorguzuc7FEtemu292kIt_7XTfUVa?gv=true">Reservar mesa</a>
-  <!-- Google Calendar Appointment Scheduling begin -->
-  <iframe src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1SvWibDfGZ-MayPaIGykP7SpOiSSGTs2z_zFrYuHZmV_tyorguzuc7FEtemu292kIt_7XTfUVa?gv=true" style="border: 0" width="100%" height="600" frameborder="0"></iframe>
-  <!-- end Google Calendar Appointment Scheduling -->
+<section class="center" id="reservar">
+  <h2>Reservar mesa</h2>
+  <div id="reserva">
+    <p>1. Elegí el día</p>
+    <div id="dias" class="opciones"></div>
+    <p>2. Elegí la hora</p>
+    <div id="horas" class="opciones"></div>
+    <p>3. Tus datos</p>
+    <input id="nombre" placeholder="Nombre" oninput="actualizar()">
+    <input id="personas" type="number" min="1" max="20" value="2">
+    <button id="confirmar" class="btn" disabled onclick="confirmar()">Confirmar por WhatsApp</button>
+  </div>
   <p style="margin-top:12px"><a class="btn secondary" href="https://wa.me/54XXXXXXXXXX">Consultar por WhatsApp</a></p>
 </section>
   <section>
