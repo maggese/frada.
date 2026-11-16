@@ -14,19 +14,19 @@
   main { max-width:720px; margin:0 auto; padding:24px 16px 48px; }
   section { margin-bottom:40px; }
   h2 { color:var(--accent); border-bottom:2px solid var(--accent); padding-bottom:6px; }
-  .item { display:flex; justify-content:space-between; gap:16px; padding:10px 0; border-bottom:1px dashed #ddd; }
-  .price { font-weight:bold; white-space:nowrap; }
-  .item small { color:var(--muted); display:block; }
-  .btn { display:inline-block; padding:14px 28px; background:var(--accent); color:#fff; text-decoration:none; border-radius:999px; font-weight:bold; }
+  .btn { display:inline-block; padding:14px 28px; background:var(--accent); color:#fff; text-decoration:none; border:none; border-radius:999px; font-weight:bold; font-size:1rem; cursor:pointer; }
   .btn.secondary { background:#25d366; }
   .center { text-align:center; }
   footer { text-align:center; color:var(--muted); padding:24px; font-size:.9rem; }
 
-  .opciones { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 8px 0 16px; }
-  .opcion { padding: 8px 12px; border: 1px solid #b5452b; background: #fff; color: #b5452b; border-radius: 8px; cursor: pointer; }
-  .opcion.activa { background: #b5452b; color: #fff; }
-  #reserva input { display: block; margin: 8px auto; padding: 8px; width: 260px; max-width: 90%; }
-  #confirmar:disabled { opacity: .5; cursor: not-allowed; }
+  .paso { margin: 20px 0 8px; font-weight: bold; }
+  .opciones { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:8px; }
+  .opcion { padding:8px 12px; border:1px solid var(--accent); background:#fff; color:var(--accent); border-radius:8px; cursor:pointer; font-size:.95rem; }
+  .opcion.activa { background:var(--accent); color:#fff; }
+  .vacio { color:var(--muted); font-size:.9rem; }
+  #reserva input { display:block; margin:8px auto; padding:8px; width:260px; max-width:90%; font-size:1rem; }
+  #confirmar { margin-top:12px; }
+  #confirmar:disabled { opacity:.5; cursor:not-allowed; }
 </style>
 </head>
 <body>
@@ -34,20 +34,23 @@
   <h1>frada.</h1>
   <p>Av. San Martín 1960 | Caballito</p>
 </header>
+
 <main>
   <section class="center" id="reservar">
     <h2>Reservar mesa</h2>
     <div id="reserva">
-      <p>1. Elegí el día</p>
+      <p class="paso">1. Elegí el día</p>
       <div id="dias" class="opciones"></div>
-      <p>2. Elegí la hora</p>
-      <div id="horas" class="opciones"></div>
-      <p>3. Tus datos</p>
+
+      <p class="paso">2. Elegí la hora</p>
+      <div id="horas" class="opciones"><span class="vacio">Primero elegí un día</span></div>
+
+      <p class="paso">3. Tus datos</p>
       <input id="nombre" placeholder="Nombre" oninput="actualizar()">
-      <input id="personas" type="number" min="1" max="20" value="2">
+      <input id="personas" type="number" min="1" max="20" value="2" oninput="actualizar()">
       <button id="confirmar" class="btn" disabled onclick="confirmar()">Confirmar por WhatsApp</button>
     </div>
-    <p style="margin-top:12px"><a class="btn secondary" href="https://wa.me/54XXXXXXXXXX">Consultar por WhatsApp</a></p>
+    <p style="margin-top:20px"><a class="btn secondary" href="https://wa.me/54XXXXXXXXXX">Consultar por WhatsApp</a></p>
   </section>
 
   <section>
@@ -62,7 +65,8 @@
     <p>Av. San Martín 1960, Caballito, Buenos Aires</p>
   </section>
 </main>
-<footer>© 2026 Nombre del Bar</footer>
+
+<footer>© 2026 frada.</footer>
 
 <script>
   const WHATSAPP = "54XXXXXXXXXX"; // tu número con código de país, sin + ni 0 ni 15
@@ -70,7 +74,7 @@
   const DIAS = ["dom","lun","mar","mié","jue","vie","sáb"];
   let dia = null, hora = null;
 
-  // Lun a jue cierra 23:30, vie y sáb cierra 00:30 (día siguiente), dom cerrado.
+  // Lun a jue: 19:00 a 23:30. Vie y sáb: 19:00 a 00:30. Dom: cerrado.
   // La última reserva es 30 min antes del cierre.
   function horarios(fecha) {
     const d = fecha.getDay();
@@ -86,27 +90,33 @@
     return lista;
   }
 
-  function marcar(id, boton) {
-    document.querySelectorAll(`#${id} .opcion`).forEach(x => x.classList.remove("activa"));
+  function marcar(contenedor, boton) {
+    contenedor.querySelectorAll(".opcion").forEach(x => x.classList.remove("activa"));
     boton.classList.add("activa");
   }
 
   function actualizar() {
     const nombre = document.getElementById("nombre").value.trim();
-    document.getElementById("confirmar").disabled = !(dia && hora && nombre);
+    const personas = document.getElementById("personas").value;
+    document.getElementById("confirmar").disabled = !(dia && hora && nombre && personas >= 1);
   }
 
   function elegirDia(fecha, boton) {
     dia = fecha;
     hora = null;
-    marcar("dias", boton);
+    marcar(document.getElementById("dias"), boton);
+
     const cont = document.getElementById("horas");
     cont.innerHTML = "";
-    horarios(fecha).forEach(h => {
+    const lista = horarios(fecha);
+    if (lista.length === 0) {
+      cont.innerHTML = '<span class="vacio">Ese día estamos cerrados</span>';
+    }
+    lista.forEach(h => {
       const b = document.createElement("button");
       b.className = "opcion";
       b.textContent = h;
-      b.onclick = () => { hora = h; marcar("horas", b); actualizar(); };
+      b.onclick = () => { hora = h; marcar(cont, b); actualizar(); };
       cont.appendChild(b);
     });
     actualizar();
