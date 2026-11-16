@@ -21,6 +21,12 @@
   .btn.secondary { background:#25d366; }
   .center { text-align:center; }
   footer { text-align:center; color:var(--muted); padding:24px; font-size:.9rem; }
+
+  .opciones { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 8px 0 16px; }
+  .opcion { padding: 8px 12px; border: 1px solid #b5452b; background: #fff; color: #b5452b; border-radius: 8px; cursor: pointer; }
+  .opcion.activa { background: #b5452b; color: #fff; }
+  #reserva input { display: block; margin: 8px auto; padding: 8px; width: 260px; max-width: 90%; }
+  #confirmar:disabled { opacity: .5; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -29,31 +35,108 @@
   <p>Av. San Martín 1960 | Caballito</p>
 </header>
 <main>
-<section class="center" id="reservar">
-  <h2>Reservar mesa</h2>
-  <div id="reserva">
-    <p>1. Elegí el día</p>
-    <div id="dias" class="opciones"></div>
-    <p>2. Elegí la hora</p>
-    <div id="horas" class="opciones"></div>
-    <p>3. Tus datos</p>
-    <input id="nombre" placeholder="Nombre" oninput="actualizar()">
-    <input id="personas" type="number" min="1" max="20" value="2">
-    <button id="confirmar" class="btn" disabled onclick="confirmar()">Confirmar por WhatsApp</button>
-  </div>
-  <p style="margin-top:12px"><a class="btn secondary" href="https://wa.me/54XXXXXXXXXX">Consultar por WhatsApp</a></p>
-</section>
+  <section class="center" id="reservar">
+    <h2>Reservar mesa</h2>
+    <div id="reserva">
+      <p>1. Elegí el día</p>
+      <div id="dias" class="opciones"></div>
+      <p>2. Elegí la hora</p>
+      <div id="horas" class="opciones"></div>
+      <p>3. Tus datos</p>
+      <input id="nombre" placeholder="Nombre" oninput="actualizar()">
+      <input id="personas" type="number" min="1" max="20" value="2">
+      <button id="confirmar" class="btn" disabled onclick="confirmar()">Confirmar por WhatsApp</button>
+    </div>
+    <p style="margin-top:12px"><a class="btn secondary" href="https://wa.me/54XXXXXXXXXX">Consultar por WhatsApp</a></p>
+  </section>
+
   <section>
     <h2>Horarios</h2>
     <p>Lunes a jueves: 19:00 a 23:30</p>
     <p>Viernes y sábado: 19:00 a 00:30</p>
     <p>Domingo: cerrado</p>
   </section>
+
   <section>
     <h2>Ubicación</h2>
-    <p>Dirección completa, ciudad.</p>
+    <p>Av. San Martín 1960, Caballito, Buenos Aires</p>
   </section>
 </main>
 <footer>© 2026 Nombre del Bar</footer>
+
+<script>
+  const WHATSAPP = "54XXXXXXXXXX"; // tu número con código de país, sin + ni 0 ni 15
+  const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  const DIAS = ["dom","lun","mar","mié","jue","vie","sáb"];
+  let dia = null, hora = null;
+
+  // Lun a jue cierra 23:30, vie y sáb cierra 00:30 (día siguiente), dom cerrado.
+  // La última reserva es 30 min antes del cierre.
+  function horarios(fecha) {
+    const d = fecha.getDay();
+    if (d === 0) return [];
+    const cierre = (d === 5 || d === 6) ? 24 * 60 + 30 : 23 * 60 + 30;
+    const lista = [];
+    for (let m = 19 * 60; m <= cierre - 30; m += 30) {
+      const t = m % (24 * 60);
+      const h = String(Math.floor(t / 60)).padStart(2, "0");
+      const min = String(t % 60).padStart(2, "0");
+      lista.push(`${h}:${min}`);
+    }
+    return lista;
+  }
+
+  function marcar(id, boton) {
+    document.querySelectorAll(`#${id} .opcion`).forEach(x => x.classList.remove("activa"));
+    boton.classList.add("activa");
+  }
+
+  function actualizar() {
+    const nombre = document.getElementById("nombre").value.trim();
+    document.getElementById("confirmar").disabled = !(dia && hora && nombre);
+  }
+
+  function elegirDia(fecha, boton) {
+    dia = fecha;
+    hora = null;
+    marcar("dias", boton);
+    const cont = document.getElementById("horas");
+    cont.innerHTML = "";
+    horarios(fecha).forEach(h => {
+      const b = document.createElement("button");
+      b.className = "opcion";
+      b.textContent = h;
+      b.onclick = () => { hora = h; marcar("horas", b); actualizar(); };
+      cont.appendChild(b);
+    });
+    actualizar();
+  }
+
+  function renderDias() {
+    const cont = document.getElementById("dias");
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    for (let i = 0; i < 21; i++) {
+      const f = new Date(hoy);
+      f.setDate(hoy.getDate() + i);
+      if (f.getDay() === 0) continue; // domingo cerrado
+      const b = document.createElement("button");
+      b.className = "opcion";
+      b.textContent = `${DIAS[f.getDay()]} ${f.getDate()} ${MESES[f.getMonth()].slice(0, 3)}`;
+      b.onclick = () => elegirDia(f, b);
+      cont.appendChild(b);
+    }
+  }
+
+  function confirmar() {
+    const nombre = document.getElementById("nombre").value.trim();
+    const personas = document.getElementById("personas").value;
+    const fecha = `${dia.getDate()} de ${MESES[dia.getMonth()]}`;
+    const msg = `Hola! Quiero reservar en frada. para el ${fecha} a las ${hora} hs, ${personas} personas. Nombre: ${nombre}`;
+    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+  }
+
+  renderDias();
+</script>
 </body>
 </html>
