@@ -72,19 +72,17 @@ formulario.addEventListener("submit", async (evento) => {
   mostrar("Enviando tu reserva...");
 
   try {
-    const respuesta = await fetch(CONFIG.endpointReservas, {
+    // no-cors: la página envía la reserva sin leer la respuesta del script
+    await fetch(CONFIG.endpointReservas, {
       method: "POST",
+      mode: "no-cors",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ ...datos, nombre: datos.nombre.trim(), telefono: datos.telefono.trim() }),
     });
-    const resultado = await respuesta.json();
 
-    if (resultado.ok) {
-      mostrar(`¡Listo, ${datos.nombre.trim()}! Tu mesa para ${resultado.fechaTexto} a las ${datos.hora} hs está reservada.`, "ok");
-      formulario.reset();
-    } else {
-      mostrar(resultado.error || "No pudimos registrar la reserva. Probá de nuevo o escribinos por Instagram.", "error");
-    }
+    const fechaTexto = selectFecha.options[selectFecha.selectedIndex].textContent;
+    mostrar(`¡Recibimos tu reserva, ${datos.nombre.trim()}! Para el ${fechaTexto} a las ${datos.hora} hs.`, "ok");
+    formulario.reset();
   } catch (error) {
     mostrar("Hubo un problema de conexión. Escribinos por Instagram y lo resolvemos.", "error");
   } finally {
