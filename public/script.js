@@ -253,7 +253,7 @@ formulario.addEventListener("submit", async (evento) => {
   const telefono = datos.telefono?.trim() || "";
 
   if (!nombre || !telefono) {
-    mostrar("Completá tu nombre y un teléfono de contacto.", "error");
+    mostrar("Completá tu nombre, teléfono y email de contacto.", "error");
     return;
   }
   const email = datos.email?.trim() || "";
