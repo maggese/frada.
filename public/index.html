@@ -103,7 +103,7 @@
 
           <div class="campo">
             <span>Horario</span>
-            <div class="horarios" id="horarios-opciones">
+            <div class="horarios" id="horarios">
               <p class="texto-suave">Primero elegí un día.</p>
             </div>
           </div>
@@ -134,6 +134,11 @@
           <label class="campo">
             <span>Comentarios (opcional)</span>
             <textarea name="comentarios" rows="2" placeholder="Cumpleaños, alergias, mesa con vista..."></textarea>
+          </label>
+
+          <label class="campo">
+            <span>Email (opcional, para recibir la confirmación)</span>
+            <input type="email" name="email" autocomplete="email">
           </label>
 
           <button type="submit" class="btn btn-primario btn-bloque" id="boton-reserva">Confirmar reserva</button>
