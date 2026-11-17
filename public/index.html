@@ -40,7 +40,7 @@
       <div class="hero-capa"></div>
       <div class="hero-contenido">
         <h1 class="hero-titulo">frada.</h1>
-        <p class="hero-lema">Una pintoresca esquina donde siempre hay un buen motivo para parar.</p>
+        <p class="hero-lema">Un paréntesis en tu día.</p>
         <div class="hero-botones">
           <a href="#reservar" class="btn btn-primario">Reservar mesa</a>
           <a href="assets/carta-frada.pdf" class="btn btn-secundario" target="_blank" rel="noopener">Ver carta</a>
@@ -73,7 +73,7 @@
       <div class="reservar-formulario">
         <p class="etiqueta">Reservas</p>
         <h2>Hacé tu reserva</h2>
-        <p class="texto-suave">Viernes o sábados por la noche. Completá el formulario y te confirmamos tu mesa.</p>
+        <p class="texto-suave">Viernes y sábados por la noche, de 20:00 a 21:15 hs.</p>
 
         <form id="form-reserva" novalidate>
           <label class="campo">
@@ -81,28 +81,40 @@
             <input type="text" name="nombre" autocomplete="name" required>
           </label>
 
-          <div class="fila-campos">
-            <label class="campo">
-              <span>Día</span>
-              <select name="fecha" id="select-fecha" required></select>
-            </label>
-            <label class="campo">
-              <span>Horario</span>
-              <select name="hora" required>
-                <option value="20:00">20:00 hs</option>
-                <option value="20:15">20:15 hs</option>
-                <option value="20:30">20:30 hs</option>
-                <option value="20:45">20:45 hs</option>
-                <option value="21:00">21:00 hs</option>
-                <option value="21:15">21:15 hs</option>
-              </select>
-            </label>
+          <div class="campo">
+            <span>Día</span>
+            <div class="calendario">
+              <div class="calendario-cabecera">
+                <button type="button" class="cal-nav" id="cal-prev" aria-label="Mes anterior">‹</button>
+                <strong id="cal-mes"></strong>
+                <button type="button" class="cal-nav" id="cal-next" aria-label="Mes siguiente">›</button>
+              </div>
+              <div class="calendario-semana">
+                <span>LUN</span><span>MAR</span><span>MIÉ</span><span>JUE</span>
+                <span class="destacado">VIE</span><span class="destacado">SÁB</span><span>DOM</span>
+              </div>
+              <div class="calendario-dias" id="cal-dias"></div>
+              <div class="calendario-leyenda">
+                <span><i class="punto punto-libre"></i>Hay lugar</span>
+                <span><i class="punto punto-lleno"></i>Completo</span>
+              </div>
+            </div>
           </div>
+
+          <div class="campo">
+            <span>Horario</span>
+            <div class="horarios" id="horarios">
+              <p class="texto-suave">Primero elegí un día.</p>
+            </div>
+          </div>
+
+          <input type="hidden" name="fecha" id="input-fecha">
+          <input type="hidden" name="hora" id="input-hora">
 
           <div class="fila-campos">
             <label class="campo">
               <span>Personas</span>
-              <select name="personas">
+              <select name="personas" id="select-personas">
                 <option value="1">1 persona</option>
                 <option value="2" selected>2 personas</option>
                 <option value="3">3 personas</option>
