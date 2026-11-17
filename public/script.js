@@ -5,7 +5,7 @@
    ========================================================== */
 
 const CONFIG = {
-  endpointReservas: "https://script.google.com/macros/s/AKfycbxhE6VHeHp9EGkDfifmTgxAOElDiBGYdLyXINxbgyBQ_tfD0PYrpntqT2GWGwkhskgq/exec",
+  endpointReservas: "https://script.google.com/macros/s/AKfycbw_eS8cyzDVev9oLh8JagdE6IgIzxMSBXm2hkFihwKwEnK48IB2qdflLgH7iWbBqiLq/exec",
 };
 
 const HORARIOS = ["20:00", "20:15", "20:30", "20:45", "21:00", "21:15"];
