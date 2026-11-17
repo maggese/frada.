@@ -5,7 +5,7 @@
    ========================================================== */
 
 const CONFIG = {
-  endpointReservas: "https://script.google.com/macros/s/AKfycbw_eS8cyzDVev9oLh8JagdE6IgIzxMSBXm2hkFihwKwEnK48IB2qdflLgH7iWbBqiLq/exec",
+  endpointReservas: "https://script.google.com/macros/s/AKfycbxhE6VHeHp9EGkDfifmTgxAOElDiBGYdLyXINxbgyBQ_tfD0PYrpntqT2GWGwkhskgq/exec",
 };
 
 const HORARIOS = ["20:00", "20:15", "20:30", "20:45", "21:00", "21:15"];
@@ -18,7 +18,7 @@ const calDias = document.getElementById("cal-dias");
 const calMes = document.getElementById("cal-mes");
 const calPrev = document.getElementById("cal-prev");
 const calNext = document.getElementById("cal-next");
-const horariosBox = document.getElementById("horarios-opciones");
+const horariosBox = document.getElementById("horarios");
 const inputFecha = document.getElementById("input-fecha");
 const inputHora = document.getElementById("input-hora");
 const selectPersonas = document.getElementById("select-personas");
@@ -211,6 +211,24 @@ async function cargarDisponibilidad() {
   }
 }
 
+/* Muestra debajo del mensaje el link para cancelar la reserva */
+function agregarLinkCancelar(url, email) {
+  const texto = document.createElement("span");
+  texto.textContent = email
+    ? " Te enviamos la confirmación a tu mail. Si necesitás cancelar, también podés usar este link: "
+    : " Guardá este link si necesitás cancelar: ";
+
+  const enlace = document.createElement("a");
+  enlace.href = url;
+  enlace.target = "_blank";
+  enlace.rel = "noopener";
+  enlace.textContent = "Cancelar reserva";
+  enlace.style.color = "#e0653a";
+  enlace.style.fontWeight = "600";
+
+  mensaje.append(document.createElement("br"), texto, enlace);
+}
+
 function resetearFormulario() {
   formulario.reset();
   fechaElegida = null;
@@ -238,6 +256,11 @@ formulario.addEventListener("submit", async (evento) => {
     mostrar("Completá tu nombre y un teléfono de contacto.", "error");
     return;
   }
+  const email = datos.email?.trim() || "";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    mostrar("Ingresá un email válido para enviarte la confirmación.", "error");
+    return;
+  }
   if (!fechaElegida || !horaElegida) {
     mostrar("Elegí un día y un horario en el calendario.", "error");
     return;
@@ -255,6 +278,7 @@ formulario.addEventListener("submit", async (evento) => {
       accion: "reservar",
       nombre,
       telefono,
+      email,
       personas: datos.personas,
       fecha: fechaElegida,
       hora: horaElegida,
@@ -263,6 +287,7 @@ formulario.addEventListener("submit", async (evento) => {
 
     if (res.ok) {
       mostrar(`¡Listo, ${nombre}! Tu mesa para ${res.fechaTexto} a las ${horaElegida} hs está reservada.`, "ok");
+      if (res.cancelUrl) agregarLinkCancelar(res.cancelUrl, email);
       resetearFormulario();
     } else {
       mostrar(res.error, "error");
