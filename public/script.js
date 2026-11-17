@@ -11,6 +11,7 @@ const CONFIG = {
 const HORARIOS = ["20:00", "20:15", "20:30", "20:45", "21:00", "21:15"];
 const DIAS_PERMITIDOS = [5, 6];
 const DIAS_VENTANA = 60;
+const DIAS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
 const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 
 const formulario = document.getElementById("form-reserva");
@@ -45,7 +46,25 @@ function mostrar(texto, tipo = "") {
   mensaje.className = `mensaje ${tipo}`;
 }
 
-/* Consulta o registra usando JSONP: una etiqueta <script> no está sujeta a CORS */
+/* Muestra debajo del mensaje el link para cancelar la reserva */
+function agregarLinkCancelar(url, email) {
+  const texto = document.createElement("span");
+  texto.textContent = email
+    ? " Te enviamos la confirmación a tu mail. Si necesitás cancelar, también podés usar este link: "
+    : " Guardá este link si necesitás cancelar: ";
+
+  const enlace = document.createElement("a");
+  enlace.href = url;
+  enlace.target = "_blank";
+  enlace.rel = "noopener";
+  enlace.textContent = "Cancelar reserva";
+  enlace.style.color = "#e0653a";
+  enlace.style.fontWeight = "600";
+
+  mensaje.append(document.createElement("br"), texto, enlace);
+}
+
+/* Consulta la disponibilidad usando JSONP: una etiqueta <script> no está sujeta a CORS */
 function consultar(params) {
   return new Promise((resolve, reject) => {
     const nombreCb = `fradaCb_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
@@ -211,24 +230,6 @@ async function cargarDisponibilidad() {
   }
 }
 
-/* Muestra debajo del mensaje el link para cancelar la reserva */
-function agregarLinkCancelar(url, email) {
-  const texto = document.createElement("span");
-  texto.textContent = email
-    ? " Te enviamos la confirmación a tu mail. Si necesitás cancelar, también podés usar este link: "
-    : " Guardá este link si necesitás cancelar: ";
-
-  const enlace = document.createElement("a");
-  enlace.href = url;
-  enlace.target = "_blank";
-  enlace.rel = "noopener";
-  enlace.textContent = "Cancelar reserva";
-  enlace.style.color = "#e0653a";
-  enlace.style.fontWeight = "600";
-
-  mensaje.append(document.createElement("br"), texto, enlace);
-}
-
 function resetearFormulario() {
   formulario.reset();
   fechaElegida = null;
@@ -274,7 +275,10 @@ formulario.addEventListener("submit", async (evento) => {
   mostrar("Enviando tu reserva...");
 
   try {
-    const res = await consultar({
+    // La página no lee la respuesta del script (el navegador la bloquea). La reserva se envía igual
+    // y el link de cancelación se arma acá, con un código que genera la propia página.
+    const token = crypto.randomUUID();
+    const params = new URLSearchParams({
       accion: "reservar",
       nombre,
       telefono,
@@ -283,17 +287,18 @@ formulario.addEventListener("submit", async (evento) => {
       fecha: fechaElegida,
       hora: horaElegida,
       comentarios: datos.comentarios || "",
+      token,
     });
 
-    if (res.ok) {
-      mostrar(`¡Listo, ${nombre}! Tu mesa para ${res.fechaTexto} a las ${horaElegida} hs está reservada.`, "ok");
-      if (res.cancelUrl) agregarLinkCancelar(res.cancelUrl, email);
-      resetearFormulario();
-    } else {
-      mostrar(res.error, "error");
-    }
+    await fetch(`${CONFIG.endpointReservas}?${params.toString()}`, { mode: "no-cors" });
 
-    await cargarDisponibilidad();
+    const [añoE, mesE, diaE] = fechaElegida.split("-").map(Number);
+    const fechaTexto = `${DIAS[new Date(añoE, mesE - 1, diaE).getDay()]} ${diaE} de ${MESES[mesE - 1]}`;
+    mostrar(`¡Listo, ${nombre}! Recibimos tu reserva para el ${fechaTexto} a las ${horaElegida} hs.`, "ok");
+    agregarLinkCancelar(`${CONFIG.endpointReservas}?accion=cancelar&token=${token}`, email);
+    resetearFormulario();
+
+    setTimeout(cargarDisponibilidad, 2000);
   } catch (error) {
     mostrar("Hubo un problema de conexión. Escribinos por Instagram y lo resolvemos.", "error");
   } finally {
